@@ -7,7 +7,7 @@ With this script i plan to create a new generic OGN-pi image for all Pi models. 
 ## Installation basics
 
 - download latest RaspiOS from https://downloads.raspberrypi.org/raspios_lite_armhf/images/
-- clone this repository:  `git clone https://github.com/petercreyghton/ogn-install`
+- clone this repository:  `git clone `https://github.com/petercreyghton/ogn-install
 - edit `/boot/ogn-install/OGN-receiver.conf` and set the required paramaters ReceiverName, Latitude, Longitude and piUserPassword
 
 - mount the image and copy `/ogn-install` to `/boot/`
