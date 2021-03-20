@@ -8,9 +8,9 @@ With this script i plan to create a new generic OGN-pi image for all Pi models. 
 
 - download latest RaspiOS from https://downloads.raspberrypi.org/raspios_lite_armhf/images/
 - clone this repository:  `git clone `https://github.com/petercreyghton/ogn-install
-- edit `/boot/ogn-install/OGN-receiver.conf` and set the required paramaters ReceiverName, Latitude, Longitude and piUserPassword
+- edit `ogn-install/OGN-receiver.conf` and set the required paramaters ReceiverName, Latitude, Longitude and piUserPassword
 
-- mount the image and copy the `ogn-install` directory to the `boot/` volume of the SD card
+- mount the image and copy the `ogn-install` directory to the `boot/` volume of the SD card (i.e. the FAT32 partition)
 - optional: for headless installation: edit `wpa_supplicant.conf`, copy it to `boot/` and create an empty `boot/ssh` file
 - optional: for key based login, copy your public key to `boot/`
 
