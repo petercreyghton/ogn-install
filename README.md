@@ -29,17 +29,13 @@ After installation, the Pi reboots. The hostname is set to the name of the recei
 
 ## Easy Access
 
-This version of ogn-install includes a secure reverse tunnel that provides easy access to the Pi via web console and ssh.
+This version of ogn-install includes easy access to the Pi via web console and ssh through a secure reverse tunnel.
 
 Try `ssh pi@remotelysecu.re` to log in with SSH or browse to http://remotelysecu.re to access your Pi without an SSH program.
 
-In short, never search for the ip address of that headless receiver anymore. Access is provided by a cloudserver which restricts Pi access to computers on your local network. So that's pretty secure, even without TLS. 
-
-This version of ogn-install includes easy access to the Pi via web console and ssh through a secure reverse tunnel.
-
-Try `ssh pi@remotelysecu.re` to log in with SSH or browse to `http://remotelysecu.re` to access your Pi without SSH software.
-
 In short, Easy Access eliminates searching for the ip address of that headless receiver that's way up high near the antenna. Access is provided by a cloudserver which restricts Pi access to computers on your local network. So that's pretty secure, even without TLS.
+
+Here's a screenshot of my test receiver:
 
 ![Screenshot RemotelySecu.re](https://github.com/petercreyghton/ogn-install/blob/master/Screenshot%202021-03-20%20at%2015.38.09.png)
 
