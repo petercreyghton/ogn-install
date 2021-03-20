@@ -2,16 +2,18 @@
 
 Install OGN software on a Raspberry Pi (all models). 
 
-Note: this is the script i will use to create a new OGN-pi image.
+With this script i plan to create a new generic OGN-pi image for all Pi models. This requires Pi model detection at runtime, which is work in progress.
 
 ## Installation basics
 
 - download latest RaspiOS from https://downloads.raspberrypi.org/raspios_lite_armhf/images/
-- clone this repository:  `git clone https://github.com/petercreyghton/ogn-install`
+- clone this repository:  `git clone `https://github.com/petercreyghton/ogn-install
 - edit `/boot/ogn-install/OGN-receiver.conf` and set the required paramaters ReceiverName, Latitude, Longitude and piUserPassword
 
 - mount the image and copy `/ogn-install` to `/boot/`
-- for headless installation: edit `wpa_supplicant.conf`, copy it to `/boot` and create an empty `/boot/ssh` file
+- optional: for headless installation: edit `wpa_supplicant.conf`, copy it to `/boot` and create an empty `/boot/ssh` file
+- optional: for key based login, copy your public key to /boot
+
 - flash the RaspiOS image to an SD card
 
 - boot a Raspberry Pi with the flashed SD card
@@ -23,7 +25,7 @@ cd /boot/ogn-install
 ./install.sh
 ```
 
-After installation, the Pi reboots. Log in to check the status of the receiver.
+After installation, the Pi reboots. The hostname is set to the name of the receiver, and key based login is available if you copied your public key to /boot. Log in to check the status of the receiver, you should see a message like the screenshot below
 
 ## Easy Access
 
@@ -38,6 +40,9 @@ This version of ogn-install includes easy access to the Pi via web console and s
 Try `ssh pi@remotelysecu.re` to log in with SSH or browse to `http://remotelysecu.re` to access your Pi without SSH software.
 
 In short, Easy Access eliminates searching for the ip address of that headless receiver that's way up high near the antenna. Access is provided by a cloudserver which restricts Pi access to computers on your local network. So that's pretty secure, even without TLS.
+
+![Screenshot RemotelySecu.re](https://github.com/petercreyghton/ogn-install/blob/master/Screenshot%202021-03-20%20at%2015.38.09.png)
+
 
 # Future plans 
 
