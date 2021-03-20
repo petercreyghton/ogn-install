@@ -40,11 +40,11 @@ Here's a screenshot of my test receiver:
 ![Screenshot RemotelySecu.re](https://github.com/petercreyghton/ogn-install/blob/master/Screenshot%202021-03-20%20at%2015.38.09.png)
 
 
-# Future plans 
+# Plans
 
 ## Remote access
 
-For a future release, it will be possible to access your receiver remotely with a public ssh key and a generated accountname based on the receiver's station name. This is still work in progress.
+For a future release, plans are to implement remote access to the receiver with a public ssh key and a generated accountname based on the receiver's station name. This is still work in progress, as it should be more than remotely secure ;-)
 
 ## Remote Assistance
 
