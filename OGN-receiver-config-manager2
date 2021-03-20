@@ -1,0 +1,176 @@
+#!/bin/bash
+
+### Init some variables to default values
+defaultFreqCorr="+42"
+SampleRate=2.0
+GSMCenterFreq="950"
+GSMGain="30"
+OGNCenterFreq=868.8
+OGNgain=50
+Altitude="0"
+wifiCountry="NL"
+BiasTee=0
+RemoteAdminUser=REMOTEADMINUSER
+
+### Load config by sourcing /boot/OGN-receiver.conf (read bash variables)
+# Need this hack to allow sourcing from a file in dos format
+source /dev/stdin < <(dos2unix < /boot/OGN-receiver.conf)
+
+### start with checking if the receiver configuration is in place
+if [ -z "$ReceiverName" ]
+then
+  # this way, unconfigured receivers will not immediately lock out the Pi user
+  echo "No receiver name provided => Exiting"
+  exit 1;
+fi
+
+### Manage pi user
+echo "Manage pi user"
+if [ -z "$piUserPassword" ]
+then
+  echo "No password specified for \"pi\" user => Disabling usage of password for user \"pi\" (ssh key authentication is still possible)."
+  passwd -l pi
+else
+  echo "Password specified for \"pi\" user => Changing its password."
+  echo "pi:$piUserPassword" | chpasswd
+fi
+
+### enable/disable local account for remote access
+echo "Manage user account for remote access"
+# lock by default prevents a configuration error from accicentally enabling access
+usermod --lock --expiredate 1999-12-31 $RemoteAdminUser
+if [ -n "$RemoteAdminEnabled" ]; then
+  ENABLED=$(echo ${RemoteAdminEnabled^}|cut -c1)
+  if [ "$ENABLED" == "Y" ]; then 
+    # local account for remote access is enabled by configuration
+    usermod --unlock --expiredate '' $RemoteAdminUser
+  fi
+fi
+
+### Configure wifi
+if [ -n "$wifiPassword" ]
+then
+  cat >> /etc/wpa_supplicant/wpa_supplicant.conf <<EOWIFI
+
+country="${wifiCountry}"
+network={
+  ssid="${wifiName}"
+  psk="${wifiPassword}"
+}
+EOWIFI
+  ( # Not blocking
+    while [ 0 ] # Loop forever until we have a correct reply from wpa_cli
+    do
+      wpa_cli -i wlan0 reconfigure
+      if [ "$?" -eq 0 ]
+      then
+        break
+else
+  sleep 10 # Required to have interface up)
+fi
+    done
+  ) & # End of Not blocking
+    
+fi
+
+### if a public key is available in /boot, write it to authorized_keys
+if [ -e /boot/id_rsa.pub ]; then
+  # store the public key in pi homedir
+  mkdir -p /home/pi/.ssh
+  cat /boot/id_rsa.pub >> /home/pi/.ssh/authorized_keys 
+  # set the correct permissions and owner
+  chmod 600 /home/pi/.ssh/authorized_keys
+  chown pi:pi /home/pi/.ssh/authorized_keys
+fi
+
+
+### Try to measure PPM correction
+if [ -n "$FreqCorr" ]
+then
+  echo "Using configured PPM correction: $FreqCorr"
+else
+  tmpFreqCorr=`/home/pi/rtlsdr-ogn/gsm_scan 2>/dev/null | grep "Receiver Xtal correction" | awk '{print $7}' | sed -r 's/^.([0-9]+)\..*/\1/'`
+  if [ -n "$tmpFreqCorr" ]
+  then
+    FreqCorr=$tmpFreqCorr
+    echo "Using detected PPM correction: $FreqCorr"
+  else
+    FreqCorr=$defaultFreqCorr
+    echo "Using default PPM correction: $FreqCorr"
+  fi
+fi
+
+
+### Generate OGN receiver config file
+echo "Managing configuration for receiver \"$ReceiverName\".";
+
+# set hostname to station name
+hostnamectl set-hostname $ReceiverName
+# and put it in /etc/hosts as well
+grep -v "127.0.0.1" /etc/hosts > /tmp/hosts
+echo "127.0.0.1 $ReceiverName" >> /tmp/hosts
+mv -f /tmp/hosts /etc/hosts
+
+if [ -f /boot/rtlsdr-ogn.conf ]
+then
+  echo "using /boot/rtlsdr-ogn.conf for rtlsdr-ogn parameters (ignoring other receiver parameters from OGN-receiver.conf)."
+  cp /boot/rtlsdr-ogn.conf /home/pi/rtlsdr-ogn.conf
+else
+  if [ -z "$Latitude" ]
+  then
+    echo "No Latitude provided => Exiting"
+    exit 1;
+  fi
+
+  if [ -z "$Longitude" ]
+  then
+    echo "No Longitude provided => Exiting"
+    exit 1;
+  fi
+
+  echo "Generating /etc/ogn.conf"
+
+  cat >/etc/ogn.conf <<EOCONFFILE
+
+RF:
+{ 
+  FreqCorr = $FreqCorr;          # [ppm] big black/blue R820T(2) sticks have 40-80ppm correction factors, measure it with gsm_scan
+                                  # sticks with TCXO: silver/orange have near zero frequency correction and you can ommit this parameter
+  SampleRate = $SampleRate;       # [MHz] 1.0 or 2.0MHz, a bit more CPU is needed to run 2MHz but if you want to capture PilotAware you need it
+  BiasTee = $BiasTee;             # 0/1: (de)activate rtldsdr v3 power supply for inline LNA
+
+  # You can ommit the whole GSM section for sticks with TCXO
+  GSM:                            # for frequency calibration based on GSM signals
+  { CenterFreq  = $GSMCenterFreq; # [MHz] find the best GSM frequency with gsm_scan
+    Gain        = $GSMGain;       # [dB]  RF input gain, you normally don't need the full gain
+  } ;
+
+  OGN:
+  { CenterFreq = $OGNCenterFreq;  # [MHz] with 868.8MHz and 2MHz bandwidth you can capture all systems: FLARM/OGN/FANET/PilotAware
+    Gain       = $OGNgain;        # [dB]  Normally use full gain, unless intermodulation occurs of you run with an LNA, then you need to find best value
+  } ;
+
+} ;
+
+Demodulator:                      # this section can be ommited as the defaults are reasonable
+{ ScanMargin = 30.0;              # [kHz] frequency tolerance for reception, most signals should normally be +/-15kHz but some are more off frequency
+  DetectSNR  = 11.0;              # [dB]  detection threshold for FLARM/OGN
+} ;
+
+Position:
+{ Latitude   =    $Latitude;      # [deg] Antenna coordinates
+  Longitude  =    $Longitude;     # [deg]
+  Altitude   =    $Altitude;      # [m]   Altitude AMSL (not critical)
+
+  # GeoidSepar =         48;      # [m]   Geoid separation to convert from HAE to MSL
+} ;                               # for best results ommit GeoidSepar and download the WW15MGH.DAC file with getEGM.sh script
+
+APRS:
+{ Call = "$ReceiverName";         # APRS callsign (max. 9 characters) set you own name: airfield ID or locaiion name
+                                  # Please refer to http://wiki.glidernet.org/receiver-naming-convention
+} ;
+
+EOCONFFILE
+
+fi
+

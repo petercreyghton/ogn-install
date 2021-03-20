@@ -1,0 +1,15 @@
+[Unit]
+Description=Remotelysecure persistent client
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/usr/local/bin
+ExecStart=/usr/local/bin/remotelysecure-client.sh
+ExecStartPost=/bin/bash /usr/local/bin/send-hostname.sh
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
