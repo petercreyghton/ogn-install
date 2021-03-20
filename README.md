@@ -2,7 +2,7 @@
 
 Install OGN software on a Raspberry Pi (all models). 
 
-With this script i plan to create a new generic OGN-pi image for all Pi models. This requires Pi model detection at runtime, which is work in progress.
+With this script i plan to create a new generic OGN-pi image for all Pi models. This requires Pi model detection at boot time, which is work in progress.
 
 ## Installation basics
 
