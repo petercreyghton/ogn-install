@@ -16,6 +16,7 @@
 #   not blocking
 #   clock sync
 #   OGN autoconfig
+#   ARM/GPU binary selection based on Pi model
 
 export PATH=$PATH:/usr/local/bin
 
@@ -62,6 +63,19 @@ launch () {
 
   # OGN autoconfig
   /home/pi/rtlsdr-ogn/OGN-receiver-config-manager2
+
+  # use ARM or GPU binaries based on Pi model  
+  MODEL=$(cat /proc/device-tree/model|awk '{print $3'})
+  if [ $MODEL -gt 3 ]; then 
+    # use ARM binaries for Pi4 and up
+    cd /home/pi/arm/rtlsdr-ogn/
+  else
+    # use GPU binaries for Pi3 and earlier
+    cd /home/pi/gpu/rtlsdr-ogn/
+  fi
+  # copy the correct binaries to the working dir
+  cp gsm_scan ogn-rf ogn-decode /home/pi/rtlsdr-ogn/
+  cd -
 
   while read PORT USER DIR COMMAND
   do

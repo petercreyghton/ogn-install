@@ -44,19 +44,31 @@ apt -y remove --purge rtl-sdr
 apt -y autoremove
 cd $RUNPATH
 
-# step 4: get OGN executables
-cd /home/pi
+# step 4: get OGN executables for Pi 3B+ and earlier, and for Pi$ and up 
+# get arm binaries
+mkdir /home/pi/arm
+cd /home/pi/arm
+curl -O http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-latest.tgz
+tar -xf rtlsdr-ogn-bin-ARM-latest.tgz --no-same-owner
+chown root ogn-rf ogn-decode gsm_scan
+chmod a+s ogn-rf ogn-decode gsm_scan
+# get GPU binaries
+mkdir /home/pi/gpu
+cd /home/pi/gpu
+curl -O http://download.glidernet.org/rpi-gpu/rtlsdr-ogn-bin-RPI-GPU-latest.tgz
+tar -xf rtlsdr-ogn-bin-RPI-GPU-latest.tgz --no-same-owner
+chown root ogn-rf ogn-decode gsm_scan
+chmod a+s ogn-rf ogn-decode gsm_scan
+# copy binaries for current Pi model to Pi user home so installation can complete
 MODEL=$(cat /proc/device-tree/model|awk '{print $3'})
 if [ $MODEL -gt 3 ]; then 
-  DLPATH=http://download.glidernet.org/arm/
-  OGNSW=rtlsdr-ogn-bin-ARM-latest.tgz
+  # use ARM binaries for Pi4 and up
+  cp -r /home/pi/gpu/* /home/pi/
 else
-  DLPATH=http://download.glidernet.org/rpi-gpu
-  OGNSW=rtlsdr-ogn-bin-RPI-GPU-latest.tgz
+  # use GPU binaries for Pi3 and earlier
+  cp -r /home/pi/arm/* /home/pi/
 fi
-curl -O $DLPATH/$OGNSW
-tar -xf $OGNSW --no-same-owner
-cd -
+cd $RUNPATH
 
 # step 5: prepare executables and node for GPU
 # move custom files to pi home
@@ -64,22 +76,19 @@ cp OGN-receiver-config-manager2 rtlsdr-ogn /home/pi/rtlsdr-ogn/
 sed -i "s/REMOTEADMINUSER/$RemoteAdminUser/g" /home/pi/rtlsdr-ogn/OGN-receiver-config-manager2
 # configure ogn executables and GPU node file
 cd /home/pi/rtlsdr-ogn
-chmod a+x OGN-receiver-config-manager2 rtlsdr-ogn
-chown root ogn-rf ogn-decode gsm_scan
-chmod a+s ogn-rf ogn-decode gsm_scan
 if [ ! -e gpu_dev ]; then sudo mknod gpu_dev c 100 0; fi
-cd - 
+chmod a+x OGN-receiver-config-manager2 rtlsdr-ogn
+cd $RUNPATH
 
 # step 6: get WW15MGH.DAC for conversion between the Height-above-Elipsoid to Height-above-Geoid thus above MSL
-# temporarily disabled, the file has moved and this break the installation
+# Note: Temporarily disabled, the file has moved and this break the installation
 # wget --no-check-certificate https://earth-info.nga.mil/GandG/wgs84/gravitymod/egm96/binary/WW15MGH.DAC
-# provisionally copy a static version 
+# Provisionally copy a static version 
 cp WW15MGH.DAC /home/pi/rtlsdr-ogn
 
 # step 7: move configuration file to FAT32 partition in /boot for editing in any OS
 cp OGN-receiver.conf /boot
 sed -i "s/REMOTEADMINUSER/$RemoteAdminUser/g" /boot/OGN-receiver.conf
-
 
 # step 8: install service
 cd /home/pi/rtlsdr-ogn
