@@ -36,9 +36,10 @@ git clone https://github.com/rtlsdrblog/rtl-sdr-blog
 cd rtl-sdr-blog
 mkdir build
 cd build
-cmake ..
+cmake ../ -DINSTALL_UDEV_RULES=ON
 make install
 ldconfig
+cp rtl-sdr.rules /etc/udev/rules.d/rtl-sdr.rules
 # get rid of the old libraries
 apt -y remove --purge rtl-sdr
 apt -y autoremove
