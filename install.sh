@@ -63,10 +63,10 @@ chmod a+s ogn-rf ogn-decode gsm_scan
 MODEL=$(cat /proc/device-tree/model|awk '{print $3'})
 if [ $MODEL -gt 3 ]; then 
   # use ARM binaries for Pi4 and up
-  cp -r /home/pi/gpu/* /home/pi/
+  cp -r /home/pi/arm/* /home/pi/
 else
   # use GPU binaries for Pi3 and earlier
-  cp -r /home/pi/arm/* /home/pi/
+  cp -r /home/pi/gpu/* /home/pi/
 fi
 cd $RUNPATH
 
@@ -76,7 +76,7 @@ cp OGN-receiver-config-manager2 rtlsdr-ogn /home/pi/rtlsdr-ogn/
 sed -i "s/REMOTEADMINUSER/$RemoteAdminUser/g" /home/pi/rtlsdr-ogn/OGN-receiver-config-manager2
 # configure ogn executables and GPU node file
 cd /home/pi/rtlsdr-ogn
-if [ ! -e gpu_dev ]; then sudo mknod gpu_dev c 100 0; fi
+if [ ! -e gpu_dev ]; then mknod gpu_dev c 100 0; fi
 chmod a+x OGN-receiver-config-manager2 rtlsdr-ogn
 cd $RUNPATH
 
