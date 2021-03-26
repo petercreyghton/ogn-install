@@ -108,7 +108,7 @@ echo "Managing configuration for receiver \"$ReceiverName\".";
 hostnamectl set-hostname $ReceiverName
 # and put it in /etc/hosts as well
 grep -v "127.0.0.1" /etc/hosts > /tmp/hosts
-echo "127.0.0.1 $ReceiverName" >> /tmp/hosts
+echo "127.0.0.1 $ReceiverName localhost" >> /tmp/hosts
 mv -f /tmp/hosts /etc/hosts
 
 if [ -f /boot/rtlsdr-ogn.conf ]
