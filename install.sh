@@ -51,6 +51,7 @@ mkdir /home/pi/arm
 cd /home/pi/arm
 curl -O http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-latest.tgz
 tar -xf rtlsdr-ogn-bin-ARM-latest.tgz --no-same-owner
+cd rtlsdr-ogn
 chown root ogn-rf ogn-decode gsm_scan
 chmod a+s ogn-rf ogn-decode gsm_scan
 # get GPU binaries
@@ -58,17 +59,16 @@ mkdir /home/pi/gpu
 cd /home/pi/gpu
 curl -O http://download.glidernet.org/rpi-gpu/rtlsdr-ogn-bin-RPI-GPU-latest.tgz
 tar -xf rtlsdr-ogn-bin-RPI-GPU-latest.tgz --no-same-owner
+cd rtlsdr-ogn
 chown root ogn-rf ogn-decode gsm_scan
 chmod a+s ogn-rf ogn-decode gsm_scan
-# copy binaries for current Pi model to Pi user home so installation can complete
-MODEL=$(cat /proc/device-tree/model|awk '{print $3'})
-if [ $MODEL -gt 3 ]; then 
-  # use ARM binaries for Pi4 and up
-  cp -r /home/pi/arm/* /home/pi/
-else
-  # use GPU binaries for Pi3 and earlier
-  cp -r /home/pi/gpu/* /home/pi/
-fi
+# copy binaries to Pi user home
+cp -r /home/pi/arm/* /home/pi/
+chown pi:pi /home/pi/rtlsdr-ogn
+cd /home/pi/rtlsdr-ogn
+# note: remove the binaries, these are copied in by rtlsdr-ogn on service start
+#       which will fail if root-owned non-writeable binaries are present 
+rm -f gsm_scan ogn-rf ogn-decode
 cd $RUNPATH
 
 # step 5: prepare executables and node for GPU
@@ -97,7 +97,6 @@ cp -v rtlsdr-ogn /etc/init.d/rtlsdr-ogn
 sed -i 's/Template/\/etc\/ogn/g' rtlsdr-ogn.conf
 cp -v rtlsdr-ogn.conf /etc/rtlsdr-ogn.conf
 update-rc.d rtlsdr-ogn defaults
-systemctl start rtlsdr-ogn
 cd -
 
 

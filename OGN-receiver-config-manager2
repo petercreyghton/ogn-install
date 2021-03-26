@@ -65,9 +65,9 @@ EOWIFI
       if [ "$?" -eq 0 ]
       then
         break
-else
-  sleep 10 # Required to have interface up)
-fi
+      else
+        sleep 10 # Required to have interface up)
+      fi
     done
   ) & # End of Not blocking
     
