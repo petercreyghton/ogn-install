@@ -1,4 +1,4 @@
-ImageVersion="v0.42 (installed $(date +%F))"
+ImageVersion="v0.50 (installed $(date +%F))"
 RaspiOSversion="2021-01-11-raspios-buster-armhf-lite"
 OGNversion=$(head -1 /home/pi/rtlsdr-ogn/Changelog) 2>/dev/null
 

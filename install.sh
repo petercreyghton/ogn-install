@@ -159,6 +159,7 @@ chmod 600 /home/$RemoteAdminUser/.ssh/authorized_keys
 chown $RemoteAdminUser:$RemoteAdminUser /home/$RemoteAdminUser/.ssh/authorized_keys
 
 # step 8: show receiver status on login
+cp version /home/pi/rtlsdr-ogn
 cp ogn-receiver-status.sh /etc/profile.d/
 
 # step 9: setup a reverse tunnel to remotelysecu.re

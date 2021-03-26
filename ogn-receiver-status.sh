@@ -2,7 +2,7 @@
 
 # get parameters
 source /dev/stdin < <(dos2unix < /boot/OGN-receiver.conf)
-source /dev/stdin < <(dos2unix < /boot/ogn-install/version)
+source /home/pi/rtlsdr-ogn/version
 
 
 # check internet access
