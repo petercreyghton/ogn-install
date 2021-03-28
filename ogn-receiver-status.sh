@@ -84,7 +84,7 @@ else
               echo -e "${RED}        Receiver not operational, port 50010 not active. Did you reboot after install?${NC}"
             fi
           else
-            echo -e "${RED}        Service rtlsdr-ogn not started.${NC}"
+            echo -e "${RED}        Service rtlsdr-ogn not started. Did you reboot after install?${NC}"
           fi
         else
           echo -e "${RED}        No USB stick detected, is the USB receiver dongle connected and supported?${NC}"
