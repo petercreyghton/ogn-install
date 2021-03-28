@@ -9,14 +9,23 @@ ExpandFilesystem="No"
 RUNPATH=$(pwd)
 
 # fail on errors, undefined variables and pipe errors
-# only useful during development of this script
-#set -euo pipefail
+set -euo pipefail
 
 # ------  Phase ONE: install OGN software and dependencies
 
 # step 1: install prerequisites
+# first, wait for internet connection
+until ping -c1 -W2 1.1.1.1 &>/dev/null ; do  echo hoi; sleep 1; done
+#  get the correct time
 apt install -y ntpdate
-ntpdate pool.ntp.org
+until ntpdate pool.ntp.org &>/dev/null; do 
+	echo "time not in sync"
+	sleep 1
+done
+# write the date in the version file
+sed -i "s/INSTALLDATE/$(date +%F)/" version 
+# next, install required packages
+apt update
 apt install -y ntp libjpeg8 libconfig9 fftw3-dev procserv lynx telnet dos2unix
 
 # step 2: populate the blacklist to prevent claiming of the USB stick by the kernel
@@ -34,12 +43,13 @@ cd $TEMPDIR
 apt -y install git g++ gcc make cmake build-essential libconfig-dev libjpeg-dev libusb-1.0-0-dev
 git clone https://github.com/rtlsdrblog/rtl-sdr-blog
 cd rtl-sdr-blog
+cp rtl-sdr.rules /etc/udev/rules.d/rtl-sdr.rules
 mkdir build
 cd build
 cmake ../ -DINSTALL_UDEV_RULES=ON
 make install
 ldconfig
-cp rtl-sdr.rules /etc/udev/rules.d/rtl-sdr.rules
+
 # get rid of the old libraries
 apt -y remove --purge rtl-sdr
 apt -y autoremove
