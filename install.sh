@@ -186,6 +186,11 @@ ssh-keyscan -p $HIGHPORT -t rsa $HUB >> ~/.ssh/known_hosts
 systemctl daemon-reload
 systemctl enable --now remotelysecure-client
 
+# step 10: enable Wifi on all platforms
+for filename in /var/lib/systemd/rfkill/*:wlan ; do
+  echo 0 > $filename
+done
+
 echo
 echo "OGN receiver will now reboot to complete installation."
 echo
