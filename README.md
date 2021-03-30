@@ -2,7 +2,7 @@
 
 Install OGN software on a Raspberry Pi (all models). 
 
-Note: this is the script i will use to create a new OGN-pi image.
+Note: this is the script i will use to create an updated generic OGN-pi image.
 
 ## Installation basics
 

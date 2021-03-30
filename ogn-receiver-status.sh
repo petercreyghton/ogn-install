@@ -2,7 +2,7 @@
 
 # get parameters
 source /dev/stdin < <(dos2unix < /boot/OGN-receiver.conf)
-source /dev/stdin < <(dos2unix < /boot/ogn-install/version)
+source /home/pi/rtlsdr-ogn/version
 
 
 # check internet access
@@ -12,7 +12,7 @@ OGNSTATUS=$(nc -w1 aprs.glidernet.org 14580 &>/dev/null; if [ $? -eq 0 ]; then e
 # check service status
 SERVICESTATUS=$(systemctl is-active rtlsdr-ogn &>/dev/null; if [ $? -eq 0 ]; then echo "OK"; else echo "NOT RUNNING (try 'sudo reboot')"; fi)
 # check usb stick status
-USBSTICKSTATUS=$(if [ $(lsusb|grep -vi hub|wc -l 2>/dev/null) -eq 0 ]; then echo "No USB stick detected"; else echo "OK"; fi)
+USBSTICKSTATUS=$(if [ $(lsusb|grep -ie "dvb-t" -e "rtl" -e "820" &>/dev/null; echo $?) -eq 1 ]; then echo "No USB stick detected"; else echo "OK"; fi)
 # check receiver status
 RECEIVERSTATUS=$(sudo netstat -tlpn|grep 50010 &>/dev/null; if [ $? -eq 0 ]; then echo "OK"; else echo "NOT CONNECTED (try 'sudo reboot')"; fi)
 # check web console status
@@ -31,11 +31,17 @@ if [ "$(sudo chage -l $RemoteAdminUser|grep 'Account expires'|cut -d':' -f2|sed 
 
 
 # show the status page
+GREEN='\033[0;32m'
+YELLOW='\033[1;33'
+RED='\033[0;31m'
+NC='\033[0m'
+echo -n -e "${GREEN}"
 echo "     ____  _______   __                       _                  "
 echo "    / __ \/ ____/ | / /  ________  ________  (_)   _____  _____  "
 echo "   / / / / / __/  |/ /  / ___/ _ \/ ___/ _ \/ / | / / _ \/ ___/  "
 echo "  / /_/ / /_/ / /|  /  / /  /  __/ /__/  __/ /| |/ /  __/ /      "
 echo "  \____/\____/_/ |_/  /_/   \___/\___/\___/_/ |___/\___/_/       "
+echo -n -e "${NC}"
 echo
 # show receiver name or config message
 if [ -z $ReceiverName ]; then
@@ -69,25 +75,25 @@ else
           if [ "$SERVICESTATUS" == "OK" ]; then
             if [ "$RECEIVERSTATUS" == "OK" ]; then
               if [ "$FSMODE" == "read-only" ]; then
-                  echo "        Receiver is fully operational"
+                  echo -e "${GREEN}       Receiver is fully operational${NC}"
               else
-                echo "        Receiver is operational. Type 'sudo overlayctl enable' and reboot"
-                echo "        for maximal lifespan of your SDcard"
+                echo -e "${YELLOW}        Receiver is operational. Type 'sudo overlayctl enable' and reboot"
+                echo -e "        for maximal lifespan of your SDcard${NC}"
               fi
             else
-              echo "        Receiver not operational, port 50010 not active. Did you reboot after install?"
+              echo -e "${RED}        Receiver not operational, port 50010 not active. Did you reboot after install?${NC}"
             fi
           else
-            echo "        Service rtlsdr-ogn not started."
+            echo -e "${RED}        Service rtlsdr-ogn not started. Did you reboot after install?${NC}"
           fi
         else
-          echo "        No USB stick detected, is the USB receiver dongle connected and supported?"
+          echo -e "${RED}        No USB stick detected, is the USB receiver dongle connected and supported?${NC}"
         fi
       else
-        echo "        aprs.glidernet.org not responding."
+        echo -e "${RED}        aprs.glidernet.org not responding.${NC}"
       fi
     else
-      echo "        No internet connection."
+      echo -e "${RED}        No internet connection.${NC}"
     fi
     echo
 fi
