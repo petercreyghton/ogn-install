@@ -39,6 +39,8 @@ Here's a screenshot of my test receiver:
 
 ![Screenshot RemotelySecu.re](https://github.com/petercreyghton/ogn-install/blob/master/Screenshot%202021-03-30%20at%2020.48.34.png)
 
+Yep! That's a screenshot of the Easy Access webpage, available only from the same network the Pi is attached to. 
+
 # Plans
 
 ## Remote access
