@@ -37,7 +37,7 @@ In short, Easy Access eliminates searching for the ip address of that headless r
 
 Here's a screenshot of my test receiver:
 
-![Screenshot RemotelySecu.re](https://github.com/petercreyghton/ogn-install/blob/master/Screenshot%202021-03-20%20at%2015.38.09.png)
+![Screenshot RemotelySecu.re](https://github.com/petercreyghton/ogn-install/blob/master/Screenshot 2021-03-30 at 20.48.34.png)
 
 # Plans
 
