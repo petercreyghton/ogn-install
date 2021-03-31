@@ -11,7 +11,8 @@ Note: The generic OGN-pi image i created with this script can be found [here](ht
 - edit `/boot/ogn-install/OGN-receiver.conf` and set the required paramaters ReceiverName, Latitude, Longitude and piUserPassword
 
 - mount the image and copy `/ogn-install` to `/boot/`
-- for headless installation: edit `wpa_supplicant.conf`, copy it to `/boot` and create an empty `/boot/ssh` file
+- for headless installation: edit `wpa_supplicant.conf` and copy it to `/boot`
+- create an empty `/boot/ssh` file to enable SSH access
 - flash the RaspiOS image to an SD card
 
 - boot a Raspberry Pi with the flashed SD card
@@ -32,6 +33,16 @@ This version of ogn-install includes easy access to the Pi via web console and s
 Try `ssh pi@remotelysecu.re` to log in with SSH or browse to http://remotelysecu.re to access your Pi without an SSH program.
 
 In short, Easy Access eliminates searching for the ip address of that headless receiver that's way up high near the antenna. Access is provided by a cloudserver which restricts Pi access to computers on your local network. So that's pretty secure, even without TLS.
+
+If you don't want to access the Pi via Easy Access you can disable it by entering:
+
+```
+systemctl disable --now remotelysecure-client.service
+
+```
+
+Additionally you can disable the remote admin user in OGN-receiver.conf (RemoteAdminEnabled="NO")
+
 
 # Screenshot 
 
