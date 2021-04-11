@@ -1,0 +1,9 @@
+/var/log/rtlsdr-ogn/*.log {
+    rotate 3
+    size=10M
+    daily
+    missingok
+    notifempty
+    compress
+    copytruncate
+}
