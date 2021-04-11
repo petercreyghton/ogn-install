@@ -109,6 +109,8 @@ cp -v rtlsdr-ogn.conf /etc/rtlsdr-ogn.conf
 update-rc.d rtlsdr-ogn defaults
 cd -
 
+# step 9: install logrotate for ogn logfiles
+cp -v /home/pi/logrotate /etc/logrotate.d/rtlsdr-ogn
 
 
 # ------  Phase TWO: install additional tooling and configuration
