@@ -16,7 +16,7 @@ Note: The generic OGN-pi image i created with this script can be found [here](ht
 - for pi zero only: `add over_voltage=6` and `force_turbo=1` to the already existing config.txt file on the sd card (this prevents the pi zero from freezing in idle mode)
 
 - boot a Raspberry Pi with the flashed SD card
-- log in as user "pi" with the default password: "raspbian" (the new password in the OGN-receiver.conf will be set after the install.sh script has been run) and run these commands:
+- log in as user "pi" with the default password: "raspberry" (the new password in the OGN-receiver.conf will be set after the install.sh script has been run) and run these commands:
 
 ```
 sudo -i
