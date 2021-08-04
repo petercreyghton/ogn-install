@@ -6,17 +6,17 @@ Note: The generic OGN-pi image i created with this script can be found [here](ht
 
 ## Installation basics
 
-- download latest RaspiOS from https://downloads.raspberrypi.org/raspios_lite_armhf/images/
+- flash the lastest Raspberry Pi OS via Pi imager https://www.raspberrypi.org/software/
 - clone this repository:  `git clone https://github.com/petercreyghton/ogn-install`
 - edit `/boot/ogn-install/OGN-receiver.conf` and set the required paramaters ReceiverName, Latitude, Longitude and piUserPassword
 
-- mount the image and copy `/ogn-install` to `/boot/`
+- copy `/ogn-install` to `/boot/` (Note: this is the default partition "drive" on Windows on the above flashed SD card)
 - for headless installation: edit `wpa_supplicant.conf` and copy it to `/boot`
 - create an empty `/boot/ssh` file to enable SSH access
-- flash the RaspiOS image to an SD card
+- for pi zero only: `add over_voltage=6` and `force_turbo=1` to the already existing config.txt file on the sd card (this prevents the pi zero from freezing in idle mode)
 
 - boot a Raspberry Pi with the flashed SD card
-- log in as user pi and run these commands:
+- log in as user "pi" with the default password: "raspbian" (the new password in the OGN-receiver.conf will be set after the install.sh script has been run) and run these commands:
 
 ```
 sudo -i
