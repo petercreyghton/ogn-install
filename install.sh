@@ -18,7 +18,7 @@ set -euo pipefail
 until ping -c1 -W2 1.1.1.1 &>/dev/null ; do  echo hoi; sleep 1; done
 #  get the correct time
 apt install -y ntpdate
-until ntpdate pool.ntp.org &>/dev/null; do 
+until ntpdate -u pool.ntp.org &>/dev/null; do 
 	echo "time not in sync"
 	sleep 1
 done
