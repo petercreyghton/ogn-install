@@ -1,4 +1,4 @@
-### Note: as of may 1st, the remote web console is no longer operational. Contact me you have any questions
+### Note: as of may 1st 2023, the remote web console is no longer operational. Contact me you have any questions
 
 # ogn-install
 
