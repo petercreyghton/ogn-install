@@ -1,3 +1,5 @@
+# Note: as of may 1st, the remote web console is no longer operational. Contact me you have any questions
+
 # ogn-install
 
 Install OGN software on a Raspberry Pi (all models). 
